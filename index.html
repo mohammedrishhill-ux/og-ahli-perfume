@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AHLi Perfume | Premium Perfumery</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header id="navbar">
+        <nav>
+            <a href="#" class="logo">Ahli Perfumes</a>
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" onclick="closeMobileMenu()">Home</a></li>
+                <li><a href="#products" onclick="closeMobileMenu()">Collection</a></li>
+                <li><a href="#contact" onclick="closeMobileMenu()">Contact</a></li>
+            </ul>
+            <div class="cart-icon" onclick="toggleCart()">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="cart-count" id="cart-count">0</span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="cart-overlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cart-items-container">
+            <p style="text-align: center; color: #64748b; margin-top: 2rem;">Your cart is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total</span>
+                <span id="cart-total-price">₹0</span>
+            </div>
+            <button class="btn btn-block" onclick="checkoutCart()">Checkout on WhatsApp</button>
+        </div>
+    </div>
+
+    <section id="home">
+        <video autoplay muted loop playsinline class="hero-bg-video">
+            <source src="homevideoo-vmake.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title" style="color: rgba(0, 0, 0, 0.858);">Luxury Perfumes</h1>
+            <p class="hero-tagline" style="color:rgb(0, 0, 0, 0.858);">Experience fragrances that speak without words.</p>
+            <a href="#products" class="btn">Explore Collection</a>
+        </div>
+    </section>
+
+    <section id="products">
+        <div class="section-header">
+            <h2 class="section-title">The Collection</h2>
+            <p style="color: var(--text-light);">Discover your signature scent.</p>
+        </div>
+        <div class="product-grid" id="product-grid"></div>
+    </section>
+
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-left">
+                <img id="modal-img" src="" alt="Perfume Image">
+            </div>
+            <div class="modal-right">
+                <h2 id="modal-title" class="modal-title">Product Name</h2>
+                <p id="modal-desc" class="modal-desc">Description</p>
+                
+                <div class="size-selector">
+                    <span class="size-label">Select Size</span>
+                    <div class="size-options">
+                        <button class="size-btn active" id="btn-20ml" onclick="selectSize('20ml')">20ml</button>
+                        <button class="size-btn" id="btn-50ml" onclick="selectSize('50ml')">50ml</button>
+                    </div>
+                </div>
+
+                <div id="modal-price" class="modal-price">₹499</div>
+                <div class="action-buttons">
+                    <button class="btn-outline" id="add-to-cart-btn">Add to Cart</button>
+                    <button class="btn-solid" id="order-now-btn">Order Single</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="contact">
+        <div class="section-header">
+            <h2 class="section-title">Get in Touch</h2>
+        </div>
+        <form class="contact-form" id="contactForm">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="contact-name" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="contact-email" placeholder="Your Email" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Message</label>
+                <textarea rows="5" id="contact-message" placeholder="Your Message" required></textarea>
+            </div>
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i> Message sent successfully! Redirecting to WhatsApp...
+            </div>
+            <button type="button" class="btn" onclick="sendContactMessage()">Send Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2023 Ahli Perfume. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
