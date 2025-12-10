@@ -1,46 +1,43 @@
 // --- DATA ---
-// ADDED 6 PRODUCTS HERE
 const products = [
     { 
         id: 1, 
-        name: "REDLOOFI", 
-        image: "img1.jpg", 
-        description: "A fresh, airy fragrance with notes of sea salt, white musk, and bergamot. Perfect for daily wear.",
+        name: "REDLOOFI WOMEN", 
+        // Default thumbnail
+        image: "productimg1.big.jpg", 
+        // Specific images for sizes
+        images: {
+            "Small": "productimg1small.jpg", // Image for Small size
+            "Big": "productimg1.big.jpg"    // Image for Big size
+        },
+        description: "A soft, elegant, and feminine scent with a warm, graceful touch. Ideal for women who love a gentle yet lasting aroma.",
         prices: {
-            "20ml": 390,
-            "50ml": 990
+            "Small": 490,
+            "Big": 990
         }
     },
     { 
         id: 2, 
-        name: "MIDNIGHT OUD", 
-        image: "IMGproduct1.jpg", 
-        description: "A deep, woody scent featuring rich agarwood, leather, and spices. An intense choice for evening events.",
+        name: "BLAKAZIN MEN", 
+        image: "productimg2 big.jpg", 
+        images: {
+            "Small": "productimg2 small.jpg", 
+            "Big": "productimg2 big.jpg"
+        },
+        description: "A bold and fresh masculine fragrance that gives confidence and long-lasting energy. Perfect for daily wear.",
         prices: {
-            "20ml": 599,
-            "50ml": 1199
+            "Small": 490,
+            "Big": 990
         }
-    },
-    // Uncomment and add images for more products
-    
-    // { 
-    //     id: 3, 
-    //     name: "ROYAL ROSE", 
-    //     image: "img3.jpg", 
-    //     description: "A sophisticated floral blend of Bulgarian rose, jasmine, and a hint of vanilla. Elegant and timeless.",
-    //     prices: {
-    //         "20ml": 449,
-    //         "50ml": 899
-    //     }
-    // },
-
+    }
+    // Add more products here...
 ];
 
 // --- STATE --
 let cart = [];
 let currentProduct = null;
-let currentSize = "20ml";
-let currentPrice = 499;
+let currentSize = "Small"; // Default is now Small
+let currentPrice = 0;
 
 // --- DOM ELEMENTS ---
 const grid = document.getElementById('product-grid');
@@ -50,8 +47,6 @@ const navbar = document.getElementById('navbar');
 const cartCountEl = document.getElementById('cart-count');
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
-
-// Cart Sidebar Elements
 const cartSidebar = document.getElementById('cart-sidebar');
 const cartOverlay = document.querySelector('.cart-overlay');
 const cartItemsContainer = document.getElementById('cart-items-container');
@@ -64,10 +59,13 @@ const modalDesc = document.getElementById('modal-desc');
 const modalPrice = document.getElementById('modal-price');
 const addToCartBtn = document.getElementById('add-to-cart-btn');
 const orderNowBtn = document.getElementById('order-now-btn');
-const btn20ml = document.getElementById('btn-20ml');
-const btn50ml = document.getElementById('btn-50ml');
 
-// Contact Form Elements
+// Size Buttons (Updated IDs to match generic names)
+// Note: You must update your HTML IDs or the JS will break. 
+// See step 2 below for HTML update instructions.
+const btnSmall = document.getElementById('btn-20ml'); // We reuse the ID but change the text
+const btnBig = document.getElementById('btn-50ml');   // We reuse the ID but change the text
+
 const contactForm = document.getElementById('contactForm');
 const contactName = document.getElementById('contact-name');
 const contactEmail = document.getElementById('contact-email');
@@ -76,6 +74,16 @@ const successMessage = document.getElementById('successMessage');
 
 // --- INIT ---
 function init() {
+    // Update Button Labels on Load
+    if(btnSmall) { 
+        btnSmall.textContent = "Small"; 
+        btnSmall.onclick = () => selectSize('Small');
+    }
+    if(btnBig) { 
+        btnBig.textContent = "Big"; 
+        btnBig.onclick = () => selectSize('Big');
+    }
+
     renderProducts();
     setupNavbarScroll();
     setupEventListeners();
@@ -88,7 +96,7 @@ function renderProducts() {
             <div class="card-img-container"><img src="${product.image}" alt="${product.name}" onerror="this.src='https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1000&auto=format&fit=crop'"></div>
             <div class="card-details">
                 <h3 class="card-title">${product.name}</h3>
-                <p class="card-price">Starting from ₹${product.prices["20ml"]}</p>
+                <p class="card-price">Starting from ₹${product.prices["Small"]}</p>
             </div>
         </div>
     `).join('');
@@ -109,7 +117,7 @@ function setupNavbarScroll() {
     });
 }
 
-// --- MOBILE MENU LOGIC ---
+// --- MOBILE MENU ---
 function setupMobileMenu() {
     hamburger.addEventListener('click', toggleMobileMenu);
     document.addEventListener('click', (e) => {
@@ -118,9 +126,7 @@ function setupMobileMenu() {
         }
     });
     window.addEventListener('scroll', () => {
-        if (navLinks.classList.contains('active')) {
-            closeMobileMenu();
-        }
+        if (navLinks.classList.contains('active')) closeMobileMenu();
     });
 }
 
@@ -128,13 +134,7 @@ function toggleMobileMenu(e) {
     if (e) e.stopPropagation();
     navLinks.classList.toggle('active');
     const icon = hamburger.querySelector('i');
-    if (navLinks.classList.contains('active')) {
-        icon.classList.remove('fa-bars');
-        icon.classList.add('fa-times');
-    } else {
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
-    }
+    icon.classList.contains('fa-bars') ? (icon.classList.remove('fa-bars'), icon.classList.add('fa-times')) : (icon.classList.remove('fa-times'), icon.classList.add('fa-bars'));
 }
 
 function closeMobileMenu() {
@@ -144,18 +144,11 @@ function closeMobileMenu() {
     icon.classList.add('fa-bars');
 }
 
-// --- MODAL LOGIC & SIZE SELECTION ---
-// Attached to window to be accessible from HTML onclick attributes
+// --- MODAL & SIZE ---
 window.openProduct = (id) => {
     currentProduct = products.find(p => p.id === id);
+    selectSize('Small'); // Default to Small
     
-    // Reset to default selection (20ml)
-    selectSize('20ml');
-
-    modalImg.src = currentProduct.image;
-    modalImg.onerror = function() {
-        this.src = 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1000&auto=format&fit=crop';
-    }
     modalTitle.textContent = currentProduct.name;
     modalDesc.textContent = currentProduct.description;
     
@@ -170,13 +163,22 @@ window.selectSize = (size) => {
         currentPrice = currentProduct.prices[size];
         modalPrice.textContent = `₹${currentPrice.toLocaleString()}`;
         
-        // Update UI Buttons
-        if(size === '20ml') {
-            btn20ml.classList.add('active');
-            btn50ml.classList.remove('active');
+        // SWITCH IMAGE BASED ON SIZE
+        if (currentProduct.images && currentProduct.images[size]) {
+            modalImg.src = currentProduct.images[size];
         } else {
-            btn50ml.classList.add('active');
-            btn20ml.classList.remove('active');
+            modalImg.src = currentProduct.image;
+        }
+        
+        modalImg.onerror = function() { this.src = 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1000&auto=format&fit=crop'; }
+
+        // Update Button Styles
+        if(size === 'Small') {
+            btnSmall.classList.add('active');
+            btnBig.classList.remove('active');
+        } else {
+            btnBig.classList.add('active');
+            btnSmall.classList.remove('active');
         }
     }
 }
@@ -186,40 +188,40 @@ function closeModalFunc() {
     setTimeout(() => modal.style.display = "none", 300);
 }
 
-// --- CART LOGIC ---
-// Attached to window
+// --- CART ---
 window.toggleCart = () => {
     cartSidebar.classList.toggle('open');
     cartOverlay.classList.toggle('open');
     closeMobileMenu();
-    if (cartSidebar.classList.contains('open')) {
-        renderCartItems();
-    }
+    if (cartSidebar.classList.contains('open')) renderCartItems();
 }
 
 function addToCart() {
     if(!currentProduct) return;
     
-    // Create a specific cart item based on selection
+    // Determine which image to save in cart
+    let specificImage = currentProduct.image;
+    if(currentProduct.images && currentProduct.images[currentSize]) {
+        specificImage = currentProduct.images[currentSize];
+    }
+
     const cartItem = {
         ...currentProduct,
         selectedSize: currentSize,
-        price: currentPrice // Use the selected price
+        price: currentPrice,
+        image: specificImage
     };
 
     cart.push(cartItem);
     updateCartCount();
     
-    // UI Feedback
     cartCountEl.classList.add('pulse');
     setTimeout(() => cartCountEl.classList.remove('pulse'), 300);
     addToCartBtn.textContent = "Added!";
     setTimeout(() => addToCartBtn.textContent = "Add to Cart", 1500);
-    
     window.toggleCart();
 }
 
-// Attached to window
 window.removeFromCart = (index) => {
     cart.splice(index, 1);
     updateCartCount();
@@ -260,8 +262,15 @@ function orderSingleOnWhatsApp() {
     if(!currentProduct) return;
     const phoneNumber = "918075584863";
     
-    // Using %0A for line breaks in WhatsApp URL
-    const message = `Hi! I want to order from Ahli Perfume:%0A%0A*Product:* ${currentProduct.name}%0A*Size:* ${currentSize}%0A*Price:* ₹${currentPrice}%0A%0APlease confirm my order.`;
+    let imageRef = currentProduct.image;
+    if(currentProduct.images && currentProduct.images[currentSize]) {
+        imageRef = currentProduct.images[currentSize];
+    }
+
+    let fullImageLink = window.location.origin + '/' + imageRef;
+    if(window.location.protocol === 'file:') { fullImageLink = imageRef; }
+
+    const message = `Hi! I want to order:%0A%0A*Product:* ${currentProduct.name}%0A*Size:* ${currentSize}%0A*Price:* ₹${currentPrice}%0A*Ref Image:* ${fullImageLink}%0A%0APlease confirm.`;
     
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
 }
@@ -273,40 +282,33 @@ window.checkoutCart = () => {
     }
 
     const phoneNumber = "918075584863";
-    let message = "Hi! I would like to place an order from Ahli Perfume:%0A%0A";
+    let message = "Hi! I want to order these items:%0A%0A";
     let total = 0;
 
     cart.forEach((item, index) => {
-        message += `${index + 1}. *${item.name} (${item.selectedSize})* - ₹${item.price}%0A`;
+        let fullImageLink = window.location.origin + '/' + item.image;
+        if(window.location.protocol === 'file:') { fullImageLink = item.image; }
+
+        message += `${index + 1}. *${item.name}* (${item.selectedSize}) - ₹${item.price}%0A   *Img:* ${fullImageLink}%0A%0A`;
         total += item.price;
     });
 
-    message += `%0A*Total Amount: ₹${total.toLocaleString()}*%0A%0APlease confirm my order.`;
+    message += `*Total Amount: ₹${total.toLocaleString()}*%0A%0APlease confirm my order.`;
     
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
 }
 
-// --- CONTACT FORM WHATSAPP ---
+// --- CONTACT FORM ---
 window.sendContactMessage = () => {
     const name = contactName.value.trim();
     const email = contactEmail.value.trim();
     const messageText = contactMessage.value.trim();
     
-    if (!name || !email || !messageText) {
-        alert("Please fill in all fields.");
-        return;
-    }
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        alert("Please enter a valid email address.");
-        return;
-    }
+    if (!name || !email || !messageText) { alert("Please fill all fields."); return; }
     
     successMessage.style.display = 'block';
-    
     const phoneNumber = "918075584863";
-    const whatsappMessage = `*New Contact Form Submission - Ahli Perfume*%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Message:* ${messageText}%0A%0A*Date:* ${new Date().toLocaleString()}`;
+    const whatsappMessage = `*Contact Form*%0A*Name:* ${name}%0A*Email:* ${email}%0A*Message:* ${messageText}`;
     
     setTimeout(() => {
         window.open(`https://wa.me/${phoneNumber}?text=${whatsappMessage}`, '_blank');
@@ -318,18 +320,10 @@ window.sendContactMessage = () => {
 // --- EVENT LISTENERS ---
 function setupEventListeners() {
     closeModal.addEventListener('click', closeModalFunc);
-    window.addEventListener('click', (e) => {
-        if (e.target == modal) closeModalFunc();
-    });
+    window.addEventListener('click', (e) => { if (e.target == modal) closeModalFunc(); });
     addToCartBtn.addEventListener('click', addToCart);
     orderNowBtn.addEventListener('click', orderSingleOnWhatsApp);
-    
-    contactForm.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            sendContactMessage();
-        }
-    });
+    contactForm.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendContactMessage(); } });
 }
 
 init();
