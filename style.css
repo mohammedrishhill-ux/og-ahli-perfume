@@ -607,4 +607,7 @@ footer { padding: 2rem; text-align: center; background-color: #f1f5f9; color: va
     .action-buttons { 
         flex-direction: column; 
     }
+    .hero-title{
+        font-size: 2.5rem;
+    }
 }
